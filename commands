@@ -1,0 +1,8 @@
+// Activate Venv
+source ~/locust/bin/activate
+
+// Deactivate
+  deactivate
+
+// Run locust 
+  locust -f locustfile.py --host=http://your-service-url/
