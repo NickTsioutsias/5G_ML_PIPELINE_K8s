@@ -7,5 +7,5 @@ source ~/locust/bin/activate
 // Run locust 
   locust -f locustfile.py --host=http://your-service-url/
 
-//Prometheus Dashboard
+//Prometheus Dashboard port 9090
 kubectl port-forward svc/prometheus-kube-prometheus-prometheus 9090
