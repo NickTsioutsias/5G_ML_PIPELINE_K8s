@@ -1,25 +1,28 @@
 // Activate Venv
 source ~/locust/bin/activate
 
-// Deactivate
+// Deactivate Venv
   deactivate
 
 // Run locust 
   locust -f locustfile.py --host=http://your-service-url/
 
-//Prometheus Dashboard port 9090
-kubectl port-forward svc/prometheus-kube-prometheus-prometheus 9090
+// Prometheus Dashboard port 9090
+  kubectl port-forward svc/prometheus-kube-prometheus-prometheus 9090
 
-//Enter venv of web server
-source ./venv/bin/activate
+// Enter venv of web server
+  source ./venv/bin/activate
 
-//Run the web server 
-fastapi dev main.py
+// Run the web server 
+  fastapi dev main.py
 
-//Docker containarization
-docker build .
-docker build -t k8s-fast-api .
+// Docker containarization
+  docker build .
+  docker build -t k8s-fast-api .
 
-//Run the web server inside the container
-docker run -p 8000:80 k8s-fast-api
+// Run the web server inside the container
+  docker run -p 8000:80 k8s-fast-api
 ********** Πρωτα κανω docker buid και μετα docker run   ************
+
+// Use minikube docker daemon (works only in that terminal, if you open new terminal run command again)
+  eval $(minikube docker-env)

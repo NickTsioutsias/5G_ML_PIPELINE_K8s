@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: my-app-container
-          image: docker.io/andreas312/k8s-get-started:latest
+          image: nicktsioutsias/starter:0.0.1
           ports:
             - containerPort: 8080
 
@@ -29,5 +29,5 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 8080
+      targetPort: 80
   type: ClusterIP
