@@ -22,3 +22,4 @@ docker build -t k8s-fast-api .
 
 //Run the web server inside the container
 docker run -p 8000:80 k8s-fast-api
+********** Πρωτα κανω docker buid και μετα docker run   ************
