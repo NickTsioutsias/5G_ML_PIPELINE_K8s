@@ -9,3 +9,6 @@ source ~/locust/bin/activate
 
 //Prometheus Dashboard port 9090
 kubectl port-forward svc/prometheus-kube-prometheus-prometheus 9090
+
+//Enter venv of web server
+source ./venv/bin/activate
