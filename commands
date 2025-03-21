@@ -26,3 +26,7 @@ source ~/locust/bin/activate
 
 // Use minikube docker daemon (works only in that terminal, if you open new terminal run command again)
   eval $(minikube docker-env)
+
+//run web server inside the minikube
+minikube service my-app-service
+
