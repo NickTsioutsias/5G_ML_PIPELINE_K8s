@@ -27,6 +27,16 @@ source ~/locust/bin/activate
 // Use minikube docker daemon (works only in that terminal, if you open new terminal run command again)
   eval $(minikube docker-env)
 
-//run web server inside the minikube
-minikube service my-app-service
+// HELM PROMETHEUS INSTALL
+  helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+  helm repo update
+  helm install prometheus-operator prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+  kubectl get pods -n monitoring
+  kubectl port-forward -n monitoring svc/prometheus-operator-prometheus 9090
+  kubectl port-forward -n monitoring svc/prometheus-operator-grafana 3000
 
+
+// PROMQL
+  rate(container_cpu_usage_seconds_total{namespace="app", pod="my-app-deployment-7bf66ff496-25b5t"}[1m])
+  {namespace="app", pod="my-app-deployment-7bf66ff496-25b5t"}
+  
