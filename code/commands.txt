@@ -1,0 +1,66 @@
+// DEPLOY app
+kubectl create ns app
+kubectl delete -f deployment.yaml
+kubectl apply -f deployment.yaml
+minikube service // όνομα του app service
+
+// HELM PROMETHEUS INSTALL
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+helm install prometheus-operator prometheus-community/kube-prometheus-stack --namespace monitoring --create-namespace
+kubectl get pods -n monitoring
+kubectl port-forward -n monitoring svc/prometheus-operator-prometheus 9090
+kubectl port-forward -n monitoring svc/prometheus-operator-grafana 3000
+
+// GET GRAFANA PASSWORD
+kubectl get secret --namespace monitoring prometheus-operator-grafana -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
+
+// ΣΥΝΗΘΩΣ GRAFANA USERNAME: admin PASSWORD: prom-operator
+
+// Run locust 
+  locust -f locust.py // 200 χρήστες 5 ramp up, πρέπει πρώτα να πάρεις url του exposed app
+
+// Use minikube docker daemon (works only in that terminal, if you open new terminal run command again)
+  eval $(minikube docker-env)
+
+// PROMQL
+  # CPU Usage (rate per pod)
+sum by (pod) (
+  rate(container_cpu_usage_seconds_total{namespace="app", pod=~"my-app-deployment.*"}[1m])
+)
+
+# Memory Usage (bytes per pod)
+sum by (pod) (
+  container_memory_usage_bytes{namespace="app", pod=~"my-app-deployment.*"}
+)
+
+# Network Inbound (bytes/sec)
+sum by (pod) (
+  rate(container_network_receive_bytes_total{namespace="app", pod=~"my-app-deployment.*"}[1m])
+)
+
+# Network Outbound (bytes/sec)
+sum by (pod) (
+  rate(container_network_transmit_bytes_total{namespace="app", pod=~"my-app-deployment.*"}[1m])
+)
+
+// DEPLOY MEMORY MODEL
+eval $(minikube docker-env)
+docker build -t memory-forecast-app:latest -f Dockerfile.memory .
+kubectl apply -f memory-deployment.yaml
+kubectl get pods -l app=memory-forecast
+kubectl get svc
+kubectl port-forward service/memory-forecast-service 8500:8500
+curl -X POST http://localhost:8500/predict   -H "Content-Type: application/json"   -d '{"lagged_values": [95.5, 96.2, 97.1, 96.8, 98.0, 99.2, 98.5, 100.1]}'
+curl -X POST http://localhost:8500/forecast   -H "Content-Type: application/json"   -d '{"lagged_values": [100.0, 102.0, 104.0, 106.0, 108.0, 110.0, 112.0, 114.0]}'
+
+// DEPLOY CPU MODEL
+eval $(minikube docker-env)
+docker build -t cpu-forecast-app:latest .
+kubectl apply -f deployment.yaml
+kubectl get pods -l app=cpu-forecast
+kubectl get svc
+kubectl port-forward service/cpu-forecast-service 8081:8000
+curl -X POST http://127.0.0.1:8081/predict -H "Content-Type: application/json" -d '{"lagged_values": [0.82, 0.83, 0.81, 0.80, 0.79, 0.78, 0.77, 0.76, 0.75, 0.74, 0.73, 0.72, 0.71, 0.70, 0.69]}'
+curl -X POST http://127.0.0.1:8081/forecast -H "Content-Type: application/json" -d '{"lagged_values": [0.82, 0.83, 0.81, 0.80, 0.79, 0.78, 0.77, 0.76, 0.75, 0.74, 0.73, 0.72, 0.71, 0.70, 0.69]}'
+
