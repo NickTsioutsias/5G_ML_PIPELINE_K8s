@@ -5,7 +5,7 @@ source ~/locust/bin/activate
   deactivate
 
 // Run locust 
-  locust -f locustfile.py --host=http://your-service-url/
+  locust -f locustfile.py 
 
 // Prometheus Dashboard port 9090
   kubectl port-forward svc/prometheus-kube-prometheus-prometheus 9090
@@ -35,8 +35,33 @@ source ~/locust/bin/activate
   kubectl port-forward -n monitoring svc/prometheus-operator-prometheus 9090
   kubectl port-forward -n monitoring svc/prometheus-operator-grafana 3000
 
+// DEPLOY app
+  kubectl create ns app
+  kubectl delete -f deployment.yaml
+  kubectl apply -f deployment.yaml
+  minikube service 
+
 
 // PROMQL
-  rate(container_cpu_usage_seconds_total{namespace="app", pod="my-app-deployment-7bf66ff496-25b5t"}[1m])
-  {namespace="app", pod="my-app-deployment-7bf66ff496-25b5t"}
+  # CPU Usage (rate per pod)
+sum by (pod) (
+  rate(container_cpu_usage_seconds_total{namespace="app", pod=~"my-app-deployment.*"}[1m])
+)
+
+# Memory Usage (bytes per pod)
+sum by (pod) (
+  container_memory_usage_bytes{namespace="app", pod=~"my-app-deployment.*"}
+)
+
+# Network Inbound (bytes/sec)
+sum by (pod) (
+  rate(container_network_receive_bytes_total{namespace="app", pod=~"my-app-deployment.*"}[1m])
+)
+
+# Network Outbound (bytes/sec)
+sum by (pod) (
+  rate(container_network_transmit_bytes_total{namespace="app", pod=~"my-app-deployment.*"}[1m])
+)
   
+// MINIKUBE START
+

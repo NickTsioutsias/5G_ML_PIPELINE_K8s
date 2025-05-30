@@ -15,10 +15,10 @@ spec:
     spec:
       containers:
         - name: my-app-container
-          image: nicktsioutsias/starter:0.0.1
+          image: nicktsioutsias/starter:0.0.2
           ports:
             - name: http
-              containerPort: 80  
+              containerPort: 8000 
 
 ---
 apiVersion: v1

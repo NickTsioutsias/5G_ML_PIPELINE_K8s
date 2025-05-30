@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: memory-forecast-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: memory-forecast
+  template:
+    metadata:
+      labels:
+        app: memory-forecast
+    spec:
+      containers:
+      - name: memory-forecast
+        image: memory-forecast-app:latest
+        imagePullPolicy: Never   
+        ports:
+        - containerPort: 8500
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: memory-forecast-service
+spec:
+  selector:
+    app: memory-forecast
+  ports:
+  - protocol: TCP
+    port: 8500
+    targetPort: 8500
+  type: NodePort

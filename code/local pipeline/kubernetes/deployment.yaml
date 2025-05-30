@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cpu-forecast-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cpu-forecast
+  template:
+    metadata:
+      labels:
+        app: cpu-forecast
+    spec:
+      containers:
+      - name: cpu-forecast
+        image: cpu-forecast-app:latest
+        imagePullPolicy: Never   # <-- add this line
+        ports:
+        - containerPort: 8000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cpu-forecast-service
+spec:
+  selector:
+    app: cpu-forecast
+  ports:
+  - protocol: TCP
+    port: 8000
+    targetPort: 8000
+  type: NodePort
